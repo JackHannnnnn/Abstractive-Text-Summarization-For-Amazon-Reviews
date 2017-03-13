@@ -25,7 +25,8 @@ import sys
 # remove punctutations and convert to lower
 def textclean(s):
     # retain . and , ! ? ;
-    for ch in '"#$%&()*+-/:<=>@[\\]^`{|}~,.!?':
+    # for ch in '"#$%&()*+-/:<=>@[\\]^`{|}~,.!?':
+    for ch in '"#$%&()*+-/<=>@[\\]^`{|}~':
         s = string.replace(s,ch,' ')
     return s.lower()
 
