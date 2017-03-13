@@ -38,6 +38,8 @@ import matplotlib.pyplot as plt
 import itertools
 import sys
 import random
+import operator
+from collections import OrderedDict
 
 # import utils 
 from utils import *
@@ -210,63 +212,64 @@ class TextProcess:
         print("len of full tokens", len(full_tokens))
         print("-------------time tokenizing-----",t1-t0)
         # dict for summary and review data
-        sum_V = {}
-        rev_V = {}
+        # sum_V = {}
+        # rev_V = {}
             
 
 
         unigram_V = {}
-        unigram_V[UNK_token] = 0
+        # unigram_V[UNK_token] = 0
         # initial work-count dict population
         for token in full_tokens:
             unigram_V[token]= unigram_V.get(token,0) + 1
        
         # re-assign UNK
-        unk_words = set()
-        items = unigram_V.iteritems()
-        for word, count in items:
-            # treat low freq word as UNK
-            if count <= self.unk_threshold:
-                unk_words.add(word)
-                unigram_V[UNK_token] += count
+        # unk_words = set()
+        # items = unigram_V.iteritems()
+        # for word, count in items:
+        #     # treat low freq word as UNK
+        #     if count <= self.unk_threshold:
+        #         unk_words.add(word)
+        #         unigram_V[UNK_token] += count
            
         
-        unk_words.discard(UNK_token)
+        # unk_words.discard(UNK_token)
 
-        for word in unk_words:
-            del unigram_V[word]
+        # for word in unk_words:
+        #     del unigram_V[word]
 
+        
         self.unigram_V = unigram_V
 
-        t2 = time.time()
-        print("-----time for unigram_V-----",t2-t1)
+        # t2 = time.time()
+        # print("-----time for unigram_V-----",t2-t1)
 
-        replaced_sum_tokens = sum_tokens
-        for idx,token in enumerate(replaced_sum_tokens):
-            if token in unk_words:
-                replaced_sum_tokens[idx]=UNK_token
-                sum_V[UNK_token] = sum_V.get(UNK_token,0) +1
-            else:
-
-            
-                sum_V[token] = sum_V.get(token,0) +1
-
-
-        t3 = time.time()
-        print("-----time for sum_V-----",t3-t2)
-
-        replaced_rev_tokens = rev_tokens
-        for idx,token in enumerate(replaced_rev_tokens):
-            if token in unk_words:
-                replaced_rev_tokens[idx]=UNK_token
-                rev_V[UNK_token] = rev_V.get(UNK_token,0) +1
-            else:
+        # replaced_sum_tokens = sum_tokens
+        # for idx,token in enumerate(replaced_sum_tokens):
+        #     if token in unk_words:
+        #         replaced_sum_tokens[idx]=UNK_token
+        #         sum_V[UNK_token] = sum_V.get(UNK_token,0) +1
+        #     else:
 
             
-                rev_V[token] = rev_V.get(token,0) +1
+        #         sum_V[token] = sum_V.get(token,0) +1
 
-        self.sum_V = sum_V
-        self.rev_V = rev_V
+
+        # t3 = time.time()
+        # print("-----time for sum_V-----",t3-t2)
+
+        # replaced_rev_tokens = rev_tokens
+        # for idx,token in enumerate(replaced_rev_tokens):
+        #     if token in unk_words:
+        #         replaced_rev_tokens[idx]=UNK_token
+        #         rev_V[UNK_token] = rev_V.get(UNK_token,0) +1
+        #     else:
+
+            
+        #         rev_V[token] = rev_V.get(token,0) +1
+
+        # self.sum_V = sum_V
+        # self.rev_V = rev_V
            
 
 
@@ -275,6 +278,18 @@ class TextProcess:
 #             if token in unk_words:                
 #                 replaced_tokens_train[idx] = UNK_token
 # #             
+
+        return None
+
+    def save_word_freq(self):
+        outfile_name = "train_word_freq.txt"
+        # sort by frequency
+        sorted_unigram=OrderedDict(sorted(self.unigram_V.items(),key=lambda t: t[1],reverse=True))
+
+
+        with open(outfile_name,"w") as outf:
+           outf.writelines('{},{}'.format(k,v)+'\n' for k,v in sorted_unigram.items())
+           outf.write('\n')
 
         return None
 
@@ -293,7 +308,9 @@ class TextProcess:
         self.write_json()
         print("start generating word freq")
         self.word_freq()
-        print self.sum_V[UNK_token]
+        print("writing word-freq to txt file")
+        self.save_word_freq()
+       
         return None
 
     
@@ -303,6 +320,7 @@ def main():
     args = get_args()
     tp = TextProcess(args)
     tp.initTextProcess()
+
 
 def get_args():
     parser = argparse.ArgumentParser()
