@@ -283,18 +283,12 @@ class TextProcess:
 
     def save_word_freq(self):
         outfile_name = "train_word_freq.txt"
-<<<<<<< HEAD
-
-        with open(outfile_name,"w") as outf:
-           outf.writelines('{},{}'.format(k,v)+'\n' for k,v in self.unigram_V.items())
-=======
         # sort by frequency
         sorted_unigram=OrderedDict(sorted(self.unigram_V.items(),key=lambda t: t[1],reverse=True))
 
 
         with open(outfile_name,"w") as outf:
            outf.writelines('{},{}'.format(k,v)+'\n' for k,v in sorted_unigram.items())
->>>>>>> annie_branch
            outf.write('\n')
 
         return None
