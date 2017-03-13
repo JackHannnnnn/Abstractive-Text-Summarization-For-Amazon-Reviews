@@ -38,6 +38,8 @@ import matplotlib.pyplot as plt
 import itertools
 import sys
 import random
+import operator
+from collections import OrderedDict
 
 # import utils 
 from utils import *
@@ -216,7 +218,7 @@ class TextProcess:
 
 
         unigram_V = {}
-        unigram_V[UNK_token] = 0
+        # unigram_V[UNK_token] = 0
         # initial work-count dict population
         for token in full_tokens:
             unigram_V[token]= unigram_V.get(token,0) + 1
@@ -236,6 +238,7 @@ class TextProcess:
         # for word in unk_words:
         #     del unigram_V[word]
 
+        
         self.unigram_V = unigram_V
 
         # t2 = time.time()
@@ -280,9 +283,18 @@ class TextProcess:
 
     def save_word_freq(self):
         outfile_name = "train_word_freq.txt"
+<<<<<<< HEAD
 
         with open(outfile_name,"w") as outf:
            outf.writelines('{},{}'.format(k,v)+'\n' for k,v in self.unigram_V.items())
+=======
+        # sort by frequency
+        sorted_unigram=OrderedDict(sorted(self.unigram_V.items(),key=lambda t: t[1],reverse=True))
+
+
+        with open(outfile_name,"w") as outf:
+           outf.writelines('{},{}'.format(k,v)+'\n' for k,v in sorted_unigram.items())
+>>>>>>> annie_branch
            outf.write('\n')
 
         return None
