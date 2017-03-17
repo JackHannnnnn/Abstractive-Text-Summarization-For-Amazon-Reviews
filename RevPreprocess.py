@@ -71,6 +71,11 @@ class TextProcess:
         self.dev_set = set()
         self.dev_list = list()
 
+        # sent len list of tuples: (summary len, rev len)
+        self.train_sent_len= list()
+        self.dev_sent_len = list()
+        self.test_sent_len=list()
+
         # dict of summary + rev text. {word: freq} with UNK
         self.unigram_V = {}
         # word freq dict of sum text and review test seperately
@@ -115,14 +120,18 @@ class TextProcess:
                 temp_dict['summary']=textclean(json.loads(line)['summary'].lower())
                 # remove short sentences---hold off
                 # if (len(temp_dict['reviewText'])< threshold):
-                train_sum_set.add(temp_dict['summary'])
-                train_rev_set.add(temp_dict['reviewText'])
+
+                if(temp_dict['reviewText']!= "" and temp_dict['summary']!=""):
+                    train_sum_set.add(temp_dict['summary'])
+                    train_rev_set.add(temp_dict['reviewText'])
              
                     # encode dict with json string in order to be hashable
-                temp_json = json.dumps(temp_dict)
+                    temp_json = json.dumps(temp_dict)
                     
-                self.train_set.add(temp_json)
-                self.train_list.append(temp_dict)
+                    self.train_set.add(temp_json)
+                    self.train_list.append(temp_dict)
+                    # summary len, rev len
+                    self.train_sent_len.append((len(temp_dict['summary'].split(" ")),len(temp_dict['reviewText'].split(" "))))
 
             self.train_sum_text = ' '.join(train_sum_set)
             self.train_rev_text = ' '.join(train_rev_set)
@@ -136,10 +145,12 @@ class TextProcess:
                 temp_dict['reviewText']=textclean(json.loads(line)['reviewText'])
                 temp_dict['summary']=textclean(json.loads(line)['summary'].lower())
                     # encode dict with json string in order to be hashable
-                temp_json = json.dumps(temp_dict)
+                if(temp_dict['reviewText']!= "" and temp_dict['summary']!=""):
+                    temp_json = json.dumps(temp_dict)
                     
-                self.test_set.add(temp_json)
-                self.test_list.append(temp_dict)
+                    self.test_set.add(temp_json)
+                    self.test_list.append(temp_dict)
+                    self.test_sent_len.append((len(temp_dict['summary'].split(" ")),len(temp_dict['reviewText'].split(" "))))
 
             for line in dev_data:
                 temp_dict = dict()
@@ -147,10 +158,12 @@ class TextProcess:
                 temp_dict['reviewText']=textclean(json.loads(line)['reviewText'])
                 temp_dict['summary']=textclean(json.loads(line)['summary'].lower())
                     # encode dict with json string in order to be hashable
-                temp_json = json.dumps(temp_dict)
+                if(temp_dict['reviewText']!= "" and temp_dict['summary']!=""):
+                    temp_json = json.dumps(temp_dict)
                
-                self.dev_set.add(temp_json)
-                self.dev_list.append(temp_dict)
+                    self.dev_set.add(temp_json)
+                    self.dev_list.append(temp_dict)
+                    self.dev_sent_len.append((len(temp_dict['summary'].split(" ")),len(temp_dict['reviewText'].split(" "))))
 
             print("len of train list",len(self.train_list))
             print("len of dev list",len(self.dev_list))
@@ -288,7 +301,7 @@ class TextProcess:
 
 
         with open(outfile_name,"w") as outf:
-           outf.writelines('{},{}'.format(k,v)+'\n' for k,v in sorted_unigram.items())
+           outf.writelines('{} {}'.format(k,v)+'\n' for k,v in sorted_unigram.items())
            outf.write('\n')
 
         return None
@@ -310,6 +323,20 @@ class TextProcess:
         self.word_freq()
         print("writing word-freq to txt file")
         self.save_word_freq()
+
+        train_sum_len = [tp[0] for tp in self.train_sent_len]
+        train_rev_len =[tp[1] for tp in self.train_sent_len]
+        # print(train_rev_len)
+
+        print("max len of training summary:",max(train_sum_len))
+        print("max len of training rev:",max(train_rev_len))
+        # print("max len of training summary:",max(self.train_sent_len[1]))
+
+        print("max len of dev summary:",max([tp[0] for tp in self.dev_sent_len]))
+        print("max len of dev rev:",max([tp[1] for tp in self.dev_sent_len]))
+
+        print("max len of test summary:",max([tp[0] for tp in self.test_sent_len]))
+        print("max len of test rev:",max([tp[1] for tp in self.test_sent_len]))
        
         return None
 
