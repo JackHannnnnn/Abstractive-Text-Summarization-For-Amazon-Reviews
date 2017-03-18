@@ -46,7 +46,7 @@ class BatchGenerator(object):
         if self.generate_y:
             batch_labels = self.y[self.ith_batch*self.batch_size:(self.ith_batch+1)*self.batch_size]
             batch_labels = [line.split() for line in batch_labels]
-            batch_y_mask = [[1] * len(line) + [0] * (self.params['summary_max_len'] - len(line)) for line in batch_y]
+            batch_y_mask = [[1] * len(line) + [0] * (self.params['summary_max_len'] - len(line)) for line in batch_labels]
             #batch_y_mask = [[1] * self.params['summary_max_len'] for line in batch_labels]
             batch_y = [self.sentence_padding(line, self.params['summary_max_len'], True) for line in batch_labels]
             
