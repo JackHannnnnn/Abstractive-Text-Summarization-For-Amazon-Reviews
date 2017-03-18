@@ -184,13 +184,13 @@ class TextProcess:
         # so json.loads(string) before json.dump
         print("writing train data and dev/test data to json file")
         print("find the output as rev.test.json/rev.dev.json and rev.train.json ")
-        with open('rev.test.json', 'w') as f1:
+        with open(self.full_dataset_path[:-5]+'.rev.test.json', 'w') as f1:
   
             json.dump(json.loads(test_str),f1,ensure_ascii=False)
-        with open('rev.train.json', 'w') as f2:
+        with open(self.full_dataset_path[:-5]+'.rev.train.json', 'w') as f2:
   
             json.dump(json.loads(train_str),f2,ensure_ascii=False)
-        with open('rev.dev.json', 'w') as f3:
+        with open(self.full_dataset_path[:-5]+'.rev.dev.json', 'w') as f3:
   
             json.dump(json.loads(dev_str),f3,ensure_ascii=False)
 
@@ -295,7 +295,7 @@ class TextProcess:
         return None
 
     def save_word_freq(self):
-        outfile_name = "train_word_freq.txt"
+        outfile_name = self.full_dataset_path[:-5]+"_train_word_freq.txt"
         # sort by frequency
         sorted_unigram=OrderedDict(sorted(self.unigram_V.items(),key=lambda t: t[1],reverse=True))
 
